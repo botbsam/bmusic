@@ -18,8 +18,8 @@ from pyrogram.types import Message
 from youtubesearchpython.__future__ import VideosSearch
 from youtube_search import YoutubeSearch
 import config
-from AnonXMusic.utils.database import is_on_off
-from AnonXMusic.utils.formatters import time_to_seconds
+from ZeMusic.utils.database import is_on_off
+from ZeMusic.utils.formatters import time_to_seconds
 from pySmartDL import SmartDL
 
 
