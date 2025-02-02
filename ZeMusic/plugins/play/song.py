@@ -3,7 +3,6 @@ import requests
 import config
 import aiohttp
 import aiofiles
-from ZeMusic.platforms.Youtube import cookie_txt_file
 
 import yt_dlp
 from yt_dlp import YoutubeDL
@@ -12,7 +11,7 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import Message, InputTextMessageContent, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
 from youtube_search import YoutubeSearch
 
-from ZeMusic import app
+from ZeMusic import app, YouTube
 from ZeMusic.plugins.play.filters import command
 
 def remove_if_exists(path):
@@ -26,15 +25,15 @@ async def song_downloader(client, message: Message):
     query = " ".join(message.command[1:])
     m = await message.reply_text("<b>⇜ جـارِ البحث ..</b>")
     
-    ydl_opts = {
-        "format": "bestaudio[ext=m4a]",
-        "keepvideo": True,
-        "prefer_ffmpeg": False,
-        "geo_bypass": True,
-        "outtmpl": "%(title)s.%(ext)s",
-        "quiet": True,
-        "cookiefile": cookie_txt_file(),  # إضافة هذا السطر لتمرير ملف الكوكيز
-    }
+    # ydl_opts = {
+        # "format": "bestaudio[ext=m4a]",
+        # "keepvideo": True,
+        # "prefer_ffmpeg": False,
+        # "geo_bypass": True,
+        # "outtmpl": "%(title)s.%(ext)s",
+        # "quiet": True,
+        # "cookiefile": cookie_txt_file(),  # إضافة هذا السطر لتمرير ملف الكوكيز
+    # }
 
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
@@ -54,13 +53,9 @@ async def song_downloader(client, message: Message):
     await m.edit("<b>جاري التحميل ♪</b>")
     
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(link, download=False)
-            audio_file = ydl.prepare_filename(info_dict)
-            ydl.process_info(info_dict)
-        
+        audio_file, tre= await YouTube.download(results[0]["id"], None)
         rep = f"⟡ {app.mention}"
-        host = str(info_dict["uploader"])
+        host = str(rep)
         secmul, dur, dur_arr = 1, 0, duration.split(":")
         for i in range(len(dur_arr) - 1, -1, -1):
             dur += int(float(dur_arr[i])) * secmul
